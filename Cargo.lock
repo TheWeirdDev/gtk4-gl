@@ -724,17 +724,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "gtk-tests"
-version = "0.1.0"
-dependencies = [
- "epoxy",
- "glium",
- "gtk4",
- "libadwaita",
- "libloading",
-]
-
-[[package]]
 name = "gtk4"
 version = "0.4.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -755,6 +744,17 @@ dependencies = [
  "libc",
  "once_cell",
  "pango",
+]
+
+[[package]]
+name = "gtk4-gl"
+version = "0.1.0"
+dependencies = [
+ "epoxy",
+ "glium",
+ "gtk4",
+ "libadwaita",
+ "libloading",
 ]
 
 [[package]]

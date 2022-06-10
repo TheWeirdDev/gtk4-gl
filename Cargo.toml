@@ -1,13 +1,13 @@
 [package]
-name = "gtk-tests"
+name = "gtk4-gl"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-gtk = { version = "0.4.8", package = "gtk4"}
-adw = { version = "0.1.1" , package = "libadwaita"}
+gtk = { version = "0.4.8", package = "gtk4" }
+adw = { version = "0.1.1", package = "libadwaita" }
 glium = "0.31.0"
 # rand = "0.8.5"
 epoxy = "0.1.0"
