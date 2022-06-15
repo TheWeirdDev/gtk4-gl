@@ -40,6 +40,7 @@ fn build_ui(application: &adw::Application) {
     window.set_title(Some("Glium in GLArea"));
 
     let widget = GliumGLArea::new();
+    widget.start_tick();
     widget.set_vexpand(true);
     widget.set_hexpand(true);
 
@@ -51,7 +52,7 @@ fn build_ui(application: &adw::Application) {
         .build();
     content.append(
         &adw::HeaderBar::builder()
-            .title_widget(&adw::WindowTitle::new("First App", ""))
+            .title_widget(&adw::WindowTitle::new("Gtk4 OpenGL", ""))
             .build(),
     );
     content.append(&widget);

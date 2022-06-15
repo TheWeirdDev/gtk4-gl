@@ -21,6 +21,7 @@ struct Renderer {
     vertex_buffer: VertexBuffer<Vertex>,
     index_buffer: IndexBuffer<u16>,
     program: glium::Program,
+    time: RefCell<f32>,
 }
 
 impl Renderer {
@@ -31,22 +32,30 @@ impl Renderer {
             &context,
             &[
                 Vertex {
-                    position: [-0.5, -0.5],
+                    position: [-1.0, -1.0],
                     color: [0., 1., 0.],
                 },
                 Vertex {
-                    position: [0., 0.5],
+                    position: [1., 1.],
                     color: [0., 0., 1.],
                 },
                 Vertex {
-                    position: [0.5, -0.5],
+                    position: [1., -1.],
                     color: [1., 0., 0.],
+                },
+                Vertex {
+                    position: [-1., 1.],
+                    color: [0., 0., 1.],
+                },
+                Vertex {
+                    position: [-1., -1.],
+                    color: [0., 1., 0.],
                 },
             ],
         )
         .unwrap();
         let index_buffer =
-            IndexBuffer::new(&context, PrimitiveType::TrianglesList, &[0u16, 1, 2]).unwrap();
+            IndexBuffer::new(&context, PrimitiveType::TriangleStrip, &[0u16, 1, 2, 3, 4]).unwrap();
         let program = program!(&context,
             // This example includes a shader that requires GLSL 140 or above.
             //
@@ -66,15 +75,23 @@ impl Renderer {
             // If you only care about recent GL, as you should, then going for GLSL 1.50 is
             // perfectly fine; anything else will error out, and you can catch that error and fall
             // back to something else.
-            140 => {
+            100 => {
                 vertex: r#"
-                    #version 140
+                    #version 300 es
                     uniform mat4 matrix;
+                    uniform float time;
+                    uniform vec2 resolution;
+
+                    out float t;
+                    out vec2 res;
+                    out vec3 vColor;
                     in vec2 position;
                     in vec3 color;
-                    out vec3 vColor;
                     void main() {
-                        gl_Position = vec4(position, 0.0, 1.0) * matrix;
+                        vec2 pos = position;
+                        t = time;
+                        res = resolution;
+                        gl_Position = vec4(pos, 0.0, 1.0) * matrix;
                         vColor = color;
                     }
                 "#,
@@ -89,6 +106,7 @@ impl Renderer {
             vertex_buffer,
             index_buffer,
             program,
+            time: RefCell::new(0.0),
         }
     }
 
@@ -97,14 +115,20 @@ impl Renderer {
             self.context.clone(),
             self.context.get_framebuffer_dimensions(),
         );
+        let t = *self.time.borrow();
 
+        self.time.replace(t + 0.02);
+
+        let res = self.context.get_framebuffer_dimensions();
         let uniforms = uniform! {
             matrix: [
                 [1., 0., 0., 0.],
                 [0., 1., 0., 0.],
                 [0., 0., 1., 0.],
                 [0., 0., 0., 1f32]
-            ]
+            ],
+            time: *self.time.borrow(),
+            resolution: [res.0 as f32, res.1 as f32],
         };
 
         frame.clear_color(0., 0., 0., 0.);
@@ -138,7 +162,7 @@ impl ObjectImpl for GliumGLArea {}
 impl WidgetImpl for GliumGLArea {
     fn realize(&self, widget: &Self::Type) {
         self.parent_realize(widget);
-
+         
         if widget.error().is_some() {
             return;
         }

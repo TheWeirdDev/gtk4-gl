@@ -2,7 +2,7 @@ mod imp;
 
 use gtk::{
     gdk, glib,
-    prelude::{GLAreaExt, WidgetExt},
+    prelude::{GLAreaExt, WidgetExt, WidgetExtManual},
 };
 
 glib::wrapper! {
@@ -18,6 +18,13 @@ impl Default for GliumGLArea {
 impl GliumGLArea {
     pub fn new() -> Self {
         glib::Object::new(&[]).expect("Failed to create GliumGLArea")
+    }
+
+    pub fn start_tick(&self) {
+        self.add_tick_callback(|s, _| {
+            s.queue_draw();
+            glib::Continue(true)
+        });
     }
 }
 
